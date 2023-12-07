@@ -44,7 +44,7 @@ jobs:
           target: web/latest
           rm: true
 
-      - name: Connect via SSH to server
+      - name: Copy latest web build to archive
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
@@ -67,7 +67,7 @@ jobs:
           target: android/latest
           rm: true
 
-      - name: Connect via SSH to server
+      - name: Copy latest app build to archive
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
