@@ -2,8 +2,8 @@ name: CI
 on: push
 
 jobs:
-  update:
-    name: EAS Update
+  build-and-deploy:
+    name: Build and deploy
     runs-on: ubuntu-latest
     steps:
       - name: Check for EXPO_TOKEN
@@ -53,3 +53,26 @@ jobs:
           script: |
             ISO_DATE=$(date -Iseconds)
             cp -r web/latest web/$ISO_DATE
+
+      - name: Build app
+        run: yarn android:build
+
+      - name: Copy app build to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: ./android-build
+          target: android/latest
+          rm: true
+
+      - name: Connect via SSH to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            ISO_DATE=$(date -Iseconds)
+            cp -r android/latest android/$ISO_DATE
